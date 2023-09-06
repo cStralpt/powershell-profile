@@ -16,5 +16,4 @@ yarn global add cfonts
 npm i cfonts -g
 ```
 - preview
-  ![image](https://github.com/cStralpt/powershell-profile/assets/95400822/e7276b69-1e16-4e73-8c3c-a765fd1742e9)
-
+  ![image](https://github.com/cStralpt/powershell-profile/assets/95400822/4e828cd2-1601-4a79-81ad-38bf792c3a6b)
