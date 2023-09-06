@@ -1,4 +1,4 @@
-oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\json.omp.json" | Invoke-Expression
+oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json" | Invoke-Expression
 set-alias -name pn -value pnpm
 set-alias -name host -value "c:\Windows\System32\Drivers\etc\hosts"
 Import-Module -Name Terminal-Icons
@@ -6,7 +6,7 @@ Import-Module -Name Terminal-Icons
 #Import-Module -Name npm-completion
 #Import-Module -Name Crayon
 #Import-Module -Name PwshComplete
-#Import-Module -Name WSLTabCompletion
+#Import-Module -Name WSLTabCompletion       
 # Import-Module PSReadLine
 set-alias -name vnn -value "C:\Program Files\Neovim\bin\nvim-qt.exe"
 set-alias -name auth1drive -value "D:\My Softwares\RClone OneDrive Authenticate\rclone.exe" 
@@ -59,7 +59,7 @@ function Invoke-Vn {
 }
 
 function Show-NeovimAnimation {
-      param(
+    param(
         [string]$TextIndicator = ""
     )
 
@@ -68,12 +68,12 @@ function Show-NeovimAnimation {
     $progressBarWidth = 20
     $progressBarColor = "Green"  # Set the desired color for the progress bar
     
-    cfonts "Happy Coding! | my boss" --colors candy
+    cfonts "Happy Coding!" --colors candy
     Write-Host "`r$loadingText" -ForegroundColor Red -NoNewline
     $loadingTextLength = $loadingText.Length
     $progressBarPosition = $Host.UI.RawUI.CursorPosition
     
-    # Move the cursor to the bottom of the text
+    # Move the cursor to the next line after the loading text
     $progressBarPosition.Y += 1
     $progressBarPosition.X = 0
     $Host.UI.RawUI.CursorPosition = $progressBarPosition
@@ -93,118 +93,55 @@ function Show-NeovimAnimation {
     $Host.UI.RawUI.CursorPosition = $progressBarPosition
     
     Start-Sleep -Seconds 3
-    # hyper
 }
-
 
 function Show-NeovimDialog {
-  param(
-    [string]$Directory
-  )
-    $caption = "Neovim Options"
-    $message = "Choose an option:"
-    $options = @("&Open in Current Window", "&Open in New Window", "&Cancel")
+    param(
+        [string]$Directory
+    )
+
+    $caption = "Where do you want to use Neovim?"
+    $options = @("Open in Current Window", "Open in New Window", "Cancel")
     $defaultOption = 2
-    
-    Write-Host $caption -ForegroundColor Yellow
-    Write-Host $message
 
-    for ($i = 0; $i -lt $options.Count; $i++) {
-        Write-Host ("{0}. {1}" -f ($i + 1), $options[$i])
-    }
+    $selectedIndex = 0
 
-    $choice = Read-Host -Prompt "Enter your choice (1-$($options.Count))"
-
-    if ([string]::IsNullOrEmpty($choice)) {
-        $choice = $defaultOption.ToString()
-    }
-
-    switch ($choice) {
-        1 {
-            Invoke-Vn -Animate:$true -Command nvim -ProjectPath $Directory
-            break
+    while ($true) {
+        Clear-Host
+        Write-Host $caption -ForegroundColor Yellow
+        Write-Host "Use arrow keys to navigate and press Enter to select:"
+        for ($i = 0; $i -lt $options.Count; $i++) {
+            $optionText = $options[$i]
+            if ($i -eq $selectedIndex) {
+                Write-Host ("[X] {0}" -f $optionText) -ForegroundColor Green  # Change color to emerald (Green)
+            } else {
+                Write-Host ("[ ] {0}" -f $optionText) -ForegroundColor White  # Change color to white
+            }
         }
-        2 {
-            # Invoke-Vn -Animate:$true hyper
-            Invoke-Vn -Animate:$true -Command hyper -ProjectPath $Directory
-            break
+
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown").VirtualKeyCode
+
+        switch ($key) {
+            13 {  # Enter key
+                if ($selectedIndex -eq 0) {
+                    Invoke-Vn -Animate:$true -Command nvim -ProjectPath $Directory
+                }
+                elseif ($selectedIndex -eq 1) {
+                    Invoke-Vn -Animate:$true -Command hyper -ProjectPath $Directory
+                }
+                else {
+                    Write-Host "Neovim execution canceled."
+                }
+                return
+            }
+            38 {  # Up arrow key
+                $selectedIndex = [Math]::Max(0, $selectedIndex - 1)
+            }
+            40 {  # Down arrow key
+                $selectedIndex = [Math]::Min($options.Count - 1, $selectedIndex + 1)
+            }
         }
-        default { Write-Host "Neovim execution canceled." }
     }
 }
-
-# function Show-NeovimDialog {
-#     $caption = "Neovim Options"
-#     $message = "Choose an option:"
-#     $options = @("&Open in Current Window", "&Open in New Window", "&Cancel")
-#     $defaultOption = 2
-#     $selectedIndex = 0
-#
-#     Write-Host $caption -ForegroundColor Yellow
-#     Write-Host $message
-#
-#     for ($i = 0; $i -lt $options.Count; $i++) {
-#         if ($i -eq $selectedIndex) {
-#             Write-Host ("{0}. {1}" -f ($i + 1), $options[$i]) -ForegroundColor Cyan
-#         } else {
-#             Write-Host ("{0}. {1}" -f ($i + 1), $options[$i])
-#         }
-#     }
-#
-#     $keyHandler = {
-#         param([Management.Automation.KeyInfo]$key)
-#
-#         switch ($key.VirtualKeyCode) {
-#             38 {  # Up arrow
-#                 $selectedIndex = ($selectedIndex - 1) % $options.Count
-#             }
-#             40 {  # Down arrow
-#                 $selectedIndex = ($selectedIndex + 1) % $options.Count
-#             }
-#             13 {  # Enter
-#                 $choice = ($selectedIndex + 1).ToString()
-#                 $null = Remove-PSReadLineKeyHandler -ScriptBlock $keyHandler
-#             }
-#         }
-#
-#         Write-Host "`r" -NoNewline
-#         for ($i = 0; $i -lt $options.Count; $i++) {
-#             if ($i -eq $selectedIndex) {
-#                 Write-Host ("{0}. {1}" -f ($i + 1), $options[$i]) -ForegroundColor Cyan
-#             } else {
-#                 Write-Host ("{0}. {1}" -f ($i + 1), $options[$i])
-#             }
-#         }
-#     }
-#
-#     $null = Add-PSReadLineKeyHandler -Key UpArrow -ScriptBlock $keyHandler
-#     $null = Add-PSReadLineKeyHandler -Key DownArrow -ScriptBlock $keyHandler
-#     $null = Add-PSReadLineKeyHandler -Key Enter -ScriptBlock $keyHandler
-#
-#     while ($true) {
-#         Start-Sleep -Milliseconds 100
-#         if (![string]::IsNullOrEmpty($choice)) {
-#             break
-#         }
-#     }
-#
-#     if ([string]::IsNullOrEmpty($choice)) {
-#         $choice = $defaultOption.ToString()
-#     }
-#
-#     switch ($choice) {
-#         '1' {
-#             Invoke-Vn -Animate -Command "nvim"
-#         }
-#         '2' {
-#             Invoke-Vn -Animate -Command "hyper"
-#         }
-#         default {
-#             Write-Host "Neovim execution canceled."
-#         }
-#     }
-#
-#     $null = Remove-PSReadLineKeyHandler -ScriptBlock $keyHandler
-# }
 
 Set-Alias -Name vn -Value Show-NeovimDialog
