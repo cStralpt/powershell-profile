@@ -12,6 +12,12 @@ yarn global add cfonts
 ```
 npm i cfonts -g
 ```
+```
+git status
+git add
+git commit
+```
+
 - preview
   ![image](https://github.com/cStralpt/powershell-profile/assets/95400822/e7276b69-1e16-4e73-8c3c-a765fd1742e9)
 
