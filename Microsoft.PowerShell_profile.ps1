@@ -100,9 +100,14 @@ function Show-NeovimDialog {
         [string]$Directory
     )
 
-    $caption = "Where do you want to use Neovim?"
-    $options = @("Open in Current Window", "Open in New Window", "Cancel")
-    $defaultOption = 2
+    $caption = "Neovim Options"
+    $options = @(
+        "Open in Current Window",
+        "Open in New Window",
+        "Open in Visual Studio Code",
+        "Cancel"
+    )
+    $defaultOption = 3
 
     $selectedIndex = 0
 
@@ -113,9 +118,9 @@ function Show-NeovimDialog {
         for ($i = 0; $i -lt $options.Count; $i++) {
             $optionText = $options[$i]
             if ($i -eq $selectedIndex) {
-                Write-Host ("[X] {0}" -f $optionText) -ForegroundColor Green  # Change color to emerald (Green)
+                Write-Host ("✔️ {0}" -f $optionText) -ForegroundColor Green  # Change color to emerald (Green)
             } else {
-                Write-Host ("[ ] {0}" -f $optionText) -ForegroundColor White  # Change color to white
+                Write-Host ("⚡ {0}" -f $optionText) -ForegroundColor White  # Change color to white
             }
         }
 
@@ -128,6 +133,9 @@ function Show-NeovimDialog {
                 }
                 elseif ($selectedIndex -eq 1) {
                     Invoke-Vn -Animate:$true -Command hyper -ProjectPath $Directory
+                }
+                elseif ($selectedIndex -eq 2) {
+                    Invoke-Vn -Animate:$true -Command code -ProjectPath $Directory  # Open in Visual Studio Code
                 }
                 else {
                     Write-Host "Neovim execution canceled."
@@ -143,5 +151,6 @@ function Show-NeovimDialog {
         }
     }
 }
+
 
 Set-Alias -Name vn -Value Show-NeovimDialog
