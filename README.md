@@ -1,6 +1,7 @@
 # cool powershell profile script
 <h6>You have to make sure you installed cfonts for your machine</h6>
 - pnpm
+
 ```
 pnpm i cfonts -g
 
